@@ -1,0 +1,51 @@
+---
+title: "Exploratory Data Analysis"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+
+```
+```{r}
+ggplot(data=diamonds)+
+  geom_bar(mapping = aes (x=cut))
+```
+
+```{r}
+diamonds
+```
+
+```{r}
+ggplot(data = diamonds)+
+  geom_histogram(mapping = aes(x = carat), binwidth = 0.005)
+```
+
+```{r}
+flg<- nycflights13::flights
+ggplot(data=flg,mapping = aes(x=sched_dep_time,y=dep_delay))+
+  geom_point(color=is.na(dep_time))
+
+```
+
+```{r}
+nycflights13::flights %>%
+ggplot(mapping = aes(dep_delay))+
+  geom_freqpoly(mapping = aes(color=is.na(dep_time)),binwidth = 1/4,na.rm=FALSE)
+
+```
+```{r}
+nycflights13::flights %>%
+  mutate(
+    cancelled = is.na(dep_time),
+    sched_hour = sched_dep_time %/% 100,
+    sched_min = sched_dep_time %% 100,
+    sched_dep_time = sched_hour + sched_min / 60
+  ) %>%
+  ggplot(mapping = aes(sched_dep_time)) +
+    geom_freqpoly(
+      mapping = aes(color = cancelled),
+      binwidth = 1/4
+    )
+```
+
+

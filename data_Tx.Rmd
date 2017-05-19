@@ -1,0 +1,79 @@
+---
+title: "Data_Tx"
+output: html_notebook
+---
+```
+library(nycflights13)
+library(tidyverse)
+```
+```{r}
+flights
+```
+
+```{r}
+##filtering data
+jan1 <- filter(flights, month == 1, day == 1)
+jan1
+```
+
+```{r}
+##creating DataFrames
+df <- tibble(x=c(1,NA,3))
+filter(df,! is.na(x))
+```
+
+```{r}
+#Excecise
+#filter(flights,arr_delay>=2)
+jan1[2:5]
+```
+
+```{r}
+vars <- c("year", "month", "day", "dep_delay", "arr_delay")
+select(flights, one_of(vars))
+```
+
+```{r}
+#selects cols with time in it. Not case sensitive
+select(flights, contains("TIME"))
+#mutate appends col in the end x= a/b types
+#rename renames the cols
+#transmutate keeps only the new cols
+
+```
+
+```{r}
+summarize(flights, delay = mean(dep_delay, na.rm = TRUE))
+by_day <- group_by(flights, year, month, day)
+summarize(by_day, delay = mean(dep_delay, na.rm = TRUE))
+```
+
+```{r}
+by_dest <- group_by(flights, dest,origin)
+delay <- summarize(by_dest,
+  count = n(),
+  dist = mean(distance, na.rm = TRUE),
+  delay = mean(arr_delay, na.rm = TRUE)
+)
+delay <- filter(delay, count > 20, dest != "HNL")
+arrange(delay,count)
+ggplot(data=delay, mapping=aes(x = dist,y = delay))+
+  geom_point(aes(size=count),alpha=0.3)+
+  geom_smooth(se=FALSE)
+```
+
+```{r}
+#baseball eg
+batting <- as_tibble(Lahman::Batting)
+batters <- batting %>%
+  group_by(playerID) %>%
+  summarise(ba=sum(H,na.rm=TRUE)/sum(AB,na.rm=TRUE),
+            ab=sum(AB,na.rm=TRUE))
+batters %>%
+  filter(ab < 100) %>%
+  ggplot(mapping = aes(x = ab, y = ba)) +
+    geom_point() +
+    geom_smooth(se = FALSE)
+
+```
+
